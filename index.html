@@ -219,16 +219,39 @@
           timeout: 5*1000,
           refresh: 5*60*1000
         },
-        api: "https://api.facebook.com/method/links.getStats?urls=%%URL%%&format=json",
-        share: "https://www.facebook.com/sharer/sharer.php?u=",
-        list: [
-          "https://antivote.github.io/",
-          "https://antivote.github.io/truncate-turnbull/",
-          "https://antivote.github.io/moderate-morrison/",
-          "https://antivote.github.io/denounce-dutton/",
-          "https://antivote.github.io/hate-on-hunt/",
-        ],
-        results: [],
+        share: {
+          url: "https://antivote.github.io/",
+          api: "https://www.facebook.com/sharer/sharer.php?u="
+        },
+        count: {
+          api: "https://api.facebook.com/method/links.getStats?urls=%%URLS%%&format=json",
+          domains: [
+            "http://anti-vote.xyz/"
+          ],
+          list: [
+            {
+              title: "Anti-Votes Counted",
+              url: ""
+            },
+            {
+              title: "To Truncate Turnbull",
+              url: "truncate-turnbull/"
+            },
+            {
+              title: "To Moderate Morrison",
+              url: "moderate-morrison/"
+            },
+            {
+              title: "To Denounce Dutton",
+              url: "denounce-dutton/"
+            },
+            {
+              title: "To Hate on Hunt",
+              url: "hate-on-hunt/",
+            }
+          ],
+          lookup: {}
+        },
         html: {
           number: '<li class="number">%%NUMBER%%</li>'
         },
@@ -241,12 +264,20 @@
       fn = {
 
         init: function () {
-          fn.refresh();
-
+          props.count.domains.push(props.share.url);
+          props.count.urls = props.count.list.reduce(function (urls, info, i) {
+            return urls.concat( props.count.domains.reduce(function (domains, domain) {
+              var url = domain + info.url;
+              props.count.lookup[ url ] = i;
+              return domains.concat( encodeURIComponent( url ) );
+            }, []) );
+          }, []).join(",");
           props.$el.count.parentElement.addEventListener('click', fn.on.count);
           for (i = 0; i < props.$el.share.length; ++i) {
             props.$el.share[i].addEventListener('click', fn.on.share);
           }
+
+          fn.refresh();
         },
 
         on: {
@@ -257,7 +288,7 @@
 
           share: function (e) {
             e.preventDefault();
-            fn.share(props.list[0] + this.dataset.share, this.dataset.title);
+            fn.share(props.share.url + this.dataset.share, this.dataset.title);
           }
         },
 
@@ -267,42 +298,26 @@
         },
 
         refresh: function () {
-          props.results = [];
-          fn.get(props.list[0]);
-        },
-
-        get: function (url) {
-          props.current = url;
+          props.count.results = [];
           var xhr = new XMLHttpRequest();
-          xhr.open("GET", props.api.replace('%%URL%%', encodeURIComponent( url )));
+          xhr.open("GET", props.count.api.replace('%%URLS%%', props.count.urls));
           xhr.onreadystatechange = fn.complete;
           xhr.send();
         },
 
         complete: function () {
-          if(this.readyState !== 4) return;
+          if(this.readyState !== 4 || this.status !== 200) return;
 
-          var o = {
-            count: 0,
-            url: props.current,
-            slug: props.current.replace(props.list[0], '')
-                               .replace('-', ' ')
-                               .replace(/\//g, '')
-          };
-
-          if (this.status == 200) {
-            try {
-              var response = JSON.parse(this.responseText);
-              o.count = response[0].total_count;
-              if(props.results.length===1) o.count += props.results[0].count;
-            } catch(e) {}
-          }
-
-          props.results.push(o);
-          if(props.results.length<props.list.length) return fn.get(props.list[props.results.length]);
+          try {
+            JSON.parse( this.responseText ).forEach(function (result) {
+              var i = props.count.lookup[ result.url ];
+              props.count.results[ i ] = (props.count.results[ i ] || 0) + result.total_count;
+            });
+          } catch(e) { return; }
           
-          props.results[0].count = props.results.slice(1).reduce(function (total, o) {
-            return total + o.count;
+          props.count.results[ 1 ] += props.count.results[ 0 ];
+          props.count.results[ 0 ] = props.count.results.slice( 1 ).reduce(function (total, count) {
+            return total + count;
           }, 0);
           props.ready = Date.now();
           fn.render(0);
@@ -316,11 +331,10 @@
 
         render: function (i) {
           if(!props.ready) return;
-          if(typeof i === 'undefined') i = (props.i + 1) % props.results.length;
+          if(typeof i === 'undefined') i = (props.i + 1) % props.count.results.length;
           props.i = i;
-          var count = props.results[i].count,
-              slug = props.results[i].slug;
-          props.$el.count.previousElementSibling.textContent = slug ? "to " + slug : 'Anti-Votes Counted';
+          var count = props.count.results[i];
+          props.$el.count.previousElementSibling.textContent = props.count.list[i].title;
           props.$el.count.innerHTML = ("0000" + count).slice(-Math.max(count.toString().length, 5)).split("").reduce(function (html, val) {
             return html + props.html.number.replace('%%NUMBER%%', val);
           }, '');
