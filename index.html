@@ -228,6 +228,9 @@
           domains: [
             "http://anti-vote.xyz/"
           ],
+          extras: [
+            "https://www.facebook.com/antivote2016/"
+          ],
           list: [
             {
               title: "Anti-Votes Counted",
@@ -271,12 +274,16 @@
               props.count.lookup[ url ] = i;
               return domains.concat( encodeURIComponent( url ) );
             }, []) );
-          }, []).join(",");
+          }, [])
+          .concat(props.count.extras.map(function (url) {
+            props.count.lookup[ url ] = 0;
+            return encodeURIComponent( url );
+          }))
+          .join(",");
           props.$el.count.parentElement.addEventListener('click', fn.on.count);
           for (i = 0; i < props.$el.share.length; ++i) {
             props.$el.share[i].addEventListener('click', fn.on.share);
           }
-
           fn.refresh();
         },
 
