@@ -293,7 +293,7 @@
         },
 
         share: function (url, vote) {
-           window.open(props.share + encodeURIComponent(url));
+           window.open(props.share.api + encodeURIComponent(url));
           if(vote) ga('send', 'event', 'vote', vote);
         },
 
