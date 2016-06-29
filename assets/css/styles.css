@@ -595,7 +595,8 @@ body,
     .profile-list .profile-turnbull:hover .profile-name, .profile-list .profile-turnbull.hover .profile-name {
       transform: translateX(7%); } }
   .profile-list .profile-turnbull .profile-image {
-    margin-left: 0.93em; }
+    margin-left: 0.93em;
+    min-width: 3.99388em; }
   .profile-list .profile-turnbull .profile-name {
     left: 0.7em;
     top: 2.7em;
@@ -639,7 +640,8 @@ body,
   .profile-list .profile-morrison:hover .number, .profile-list .profile-morrison.hover .number {
     box-shadow: inset 0 0 0 0.05714em #222222, inset 0 0 0 0.09524em #ffe2e8, inset 0 0 0 0.15238em #222222; }
   .profile-list .profile-morrison .profile-image {
-    margin-left: 0.5em; }
+    margin-left: 0.5em;
+    min-width: 5.01869em; }
   .profile-list .profile-morrison .profile-name {
     left: 0.25em;
     top: 3.25em;
@@ -677,7 +679,8 @@ body,
     box-shadow: inset 0 0 0 0.05714em #222222, inset 0 0 0 0.09524em #cfffcc, inset 0 0 0 0.15238em #222222; }
   .profile-list .profile-dutton .profile-image {
     margin-left: 0.85em;
-    padding-right: 0.2em; }
+    padding-right: 0.2em;
+    min-width: 3.82536em; }
   .profile-list .profile-dutton .profile-name {
     left: 0.8em;
     top: 2.7em;
@@ -717,7 +720,8 @@ body,
   .profile-list .profile-hunt:hover .number, .profile-list .profile-hunt.hover .number {
     box-shadow: inset 0 0 0 0.05714em #222222, inset 0 0 0 0.09524em #fff49f, inset 0 0 0 0.15238em #222222; }
   .profile-list .profile-hunt .profile-image {
-    margin: 0 -0.7em 0 -0.1em; }
+    margin: 0 -0.7em 0 -0.1em;
+    min-width: 6.26069em; }
     @media screen and (min-width: 37.5em) {
       .profile-list .profile-hunt .profile-image {
         margin: 0.1em -0.7em -0.1em 0.1em; } }
