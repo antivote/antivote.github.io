@@ -72,7 +72,7 @@
     <main class="main">
 
       <aside class="instructions">
-        <h3>Place a <span class="number">1</span> in a box below</h3>
+        <h3>Place a <span class="number">1</span> in any box below</h3>
       </aside>
 
       <ul id="profile-list" class="profile-list">
@@ -151,8 +151,23 @@
 
       </ul>
 
+
+      <div class="info container">
+
+        <p>Hunt, Dutton, Morrison, Turnbull. Each of these mutton-headed buffoons has tramp-stamped our history with failures that will not laser off.</p>
+
+        <p>Alas, this band of merry miscreants didn’t elect themselves. They were placed into power by the folk of their local communities through indifferrence, disregard, or misguided faith.</p>
+
+
+        <p>Share your pick for Australia’s no.1 Political Pariah and help send a message to the folk that voted them in. <u>Place a <span class="number">1</span> in any box above</u> to cast your vote.</p>
+
+      </div>
+
       <div class="button-container">
-        <a href="#wtf" title="Tell me more" class="button button-simple">Say What?</a>
+        <a href="#" class="button button-vote">
+          <h3>Anti-Vote <sub>Click here to vote now</sub></h3>
+          <span class="number">1</span>
+        </a>
       </div>
 
     </main>
@@ -277,6 +292,7 @@
         $el: {
           count: document.querySelector('.footer-count'),
           share: document.querySelectorAll('a.profile'),
+          vote: document.querySelector('.info ~ .button-container a.button-vote'),
         }
       },
 
@@ -296,6 +312,7 @@
             return encodeURIComponent( url );
           }))
           .join(",");
+          props.$el.vote.addEventListener('click', fn.on.vote);
           props.$el.count.parentElement.addEventListener('click', fn.on.count);
           for (i = 0; i < props.$el.share.length; ++i) {
             props.$el.share[i].addEventListener('click', fn.on.share);
@@ -312,6 +329,24 @@
           share: function (e) {
             e.preventDefault();
             fn.share(props.share.url + this.dataset.share, this.dataset.title);
+          },
+
+          vote: function (e) {
+            e.preventDefault();
+            window.scrollTo(0, 0);
+            if(props.hover) return;
+            props.hover = true;
+            var total = props.$el.share.length;
+            props.$el.share[0].classList.toggle('hover');
+            for(var i=0;i<total;i++) {
+              (function (i) {
+                setTimeout(function () {
+                  props.$el.share[i].classList.toggle('hover');
+                  if(i<total - 1) props.$el.share[i + 1].classList.toggle('hover');
+                  else props.hover = false;
+                }, (i + 1)*200);
+              })(i);
+            }
           }
         },
 
